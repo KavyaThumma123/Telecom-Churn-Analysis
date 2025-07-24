@@ -1,97 +1,108 @@
-Telecom-Churn-Analysis
-Churn analysis in telecom 
-Key Concepts of Telecom Churn Analysis
-1. What is Customer Churn?
-Churn refers to the percentage of customers who stop using a company’s service during a given time frame.
+. Total Customers and Churn Count
+sql
 
-Churn Rate Formula:
-Churn Rate = 
-Number of Customers Lost during a Period \ Total Customers at the Start of the Period × 100
-Churn Rate=  
-Total Customers at the Start of the Period \ Number of Customers Lost during a Period ×100
+SELECT 
+    COUNT(*) AS total_customers,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+    ROUND(100.0 * SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS churn_rate_percentage
+FROM telecom_customers;
 
-2. Objectives of Churn Analysis
-Predict churn before it happens
-Identify high-risk customers
-Understand why customers leave
-Create strategies to retain customers
+🧑‍🤝‍🧑 2. Churn Rate by Gender
+SELECT 
+    gender,
+    COUNT(*) AS total,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned,
+    ROUND(100.0 * SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS churn_rate
+FROM telecom_customers
+GROUP BY gender;
 
-3. Dataset Used in Churn Analysis
-A typical telecom churn dataset includes customer-level information such as:
+📅 3. Churn Rate by Contract Type
+SELECT 
+    Contract,
+    COUNT(*) AS total_customers,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+    ROUND(100.0 * SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS churn_rate
+FROM telecom_customers
+GROUP BY Contract;
 
-Feature Category	Examples of Features
-Demographics	Gender, Age, Senior Citizen, Tenure
-Services	Internet Service, Phone Service, Multiple Lines, Streaming
-Account Info	Monthly Charges, Total Charges, Contract Type, Payment Method
-Churn Label	Churn (Yes/No)
+💰 4. Average Monthly Charges: Churned vs Not
+SELECT 
+    Churn,
+    ROUND(AVG(MonthlyCharges), 2) AS avg_monthly_charges,
+    ROUND(AVG(TotalCharges), 2) AS avg_total_charges,
+    ROUND(AVG(tenure), 2) AS avg_tenure
+FROM telecom_customers
+GROUP BY Churn;
 
-4. Process of Telecom Churn Analysis
-🔍 Step 1: Data Understanding
-Load the data.
-Understand variable types (categorical, numerical).
-Check for target variable distribution (Churn).
+🧓 5. Senior Citizens vs Churn
+SELECT 
+    SeniorCitizen,
+    COUNT(*) AS total,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned,
+    ROUND(100.0 * SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS churn_rate
+FROM telecom_customers
+GROUP BY SeniorCitizen;
 
-🧹 Step 2: Data Cleaning
-Handle missing values.
-Convert categorical variables into numerical (e.g., using one-hot encoding).
-Normalize or scale numerical features.
+🛠️ 6. Tech Support and Churn Rate
+SELECT 
+    TechSupport,
+    COUNT(*) AS total_customers,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+    ROUND(100.0 * SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS churn_rate
+FROM telecom_customers
+GROUP BY TechSupport;
 
-📊 Step 3: Exploratory Data Analysis (EDA)
-Analyze churn rate by:
-Gender
-Contract Type
-Internet Service
-Monthly Charges, etc.
-Visualizations (bar plots, histograms, heatmaps) help identify churn patterns.
+🧠 7. Internet Service vs Churn
+SELECT 
+    InternetService,
+    COUNT(*) AS total_customers,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+    ROUND(100.0 * SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS churn_rate
+FROM telecom_customers
+GROUP BY InternetService;
 
-Example Insight:
-Customers with month-to-month contracts and higher monthly charges churn more.
+📈 8. Tenure Grouping and Churn
+SELECT
+    CASE
+        WHEN tenure <= 12 THEN '0-1 year'
+        WHEN tenure <= 24 THEN '1-2 years'
+        WHEN tenure <= 48 THEN '2-4 years'
+        ELSE '4+ years'
+    END AS tenure_group,
+    COUNT(*) AS total_customers,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+    ROUND(100.0 * SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS churn_rate
+FROM telecom_customers
+GROUP BY tenure_group
+ORDER BY tenure_group;
 
-📈 Step 4: Feature Engineering
-Create new features like:
-Average Monthly Spend = Total Charges / Tenure
-Binary features (e.g., HasStreamingService)
+🧾 9. Churn by Payment Method
+SELECT 
+    PaymentMethod,
+    COUNT(*) AS total_customers,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+    ROUND(100.0 * SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS churn_rate
+FROM telecom_customers
+GROUP BY PaymentMethod
+ORDER BY churn_rate DESC;
 
-🧠 Step 5: Model Interpretation
-Use feature importance to see which variables impact churn.
+📊 10. Most Important Feature Candidates (Correlation-like checks)
+You can simulate feature importance by checking churn rate across features like this:
+SELECT 
+    OnlineSecurity,
+    COUNT(*) AS total,
+    SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned,
+    ROUND(100.0 * SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 2) AS churn_rate
+FROM telecom_customers
+GROUP BY OnlineSecurity;
+Repeat this logic for:
 
-E.g., Contract, TechSupport, MonthlyCharges, Tenure may be top predictors.
+OnlineBackup
 
-Use SHAP or LIME for interpretability.
+StreamingTV
 
-🛠️ Step 7: Actionable Insights
-Retention Strategy:
+TechSupport
 
-Offer discounts to customers with short tenure and high bills.
+PaperlessBilling
 
-Encourage customers to shift from monthly to yearly contracts.
 
-Improve tech support services for long-term customers.
-
-📌 Example of Important Features in Churn Prediction
-Feature	Insight
-Contract Type	Month-to-month customers churn more than yearly contract holders
-Tenure	Newer customers are more likely to churn
-Tech Support	Lack of tech support correlates with high churn
-Monthly Charges	Customers with high charges are more likely to leave
-Internet Service	Fiber optic users have higher churn rate than DSL users
-
-📊 Sample Power BI/Excel Dashboard for Telecom Churn
-Churn Rate Overview
-
-Churn by Customer Segment
-
-Churn Trend Over Time
-
-Top Reasons for Churn
-
-Customer Retention Suggestions
-
-🧠 Final Thoughts
-Telecom churn analysis helps businesses understand customer behavior and reduce revenue loss. Combining data analysis, machine learning, and business strategy enables telecom companies to:
-
-Predict who will churn
-
-Understand why they churn
-
-Act proactively to reduce it
