@@ -52,32 +52,7 @@ Create new features like:
 Average Monthly Spend = Total Charges / Tenure
 Binary features (e.g., HasStreamingService)
 
-🤖 Step 5: Model Building
-Split the data into train and test sets.
-
-Use classification models like:
-
-Logistic Regression
-
-Decision Trees
-
-Random Forest
-
-XGBoost
-
-Support Vector Machines
-
-Evaluate using:
-
-Accuracy
-
-Precision, Recall
-
-F1-score
-
-ROC-AUC
-
-🧠 Step 6: Model Interpretation
+🧠 Step 5: Model Interpretation
 Use feature importance to see which variables impact churn.
 
 E.g., Contract, TechSupport, MonthlyCharges, Tenure may be top predictors.
